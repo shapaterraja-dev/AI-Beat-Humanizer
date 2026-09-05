@@ -1,195 +1,1083 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>GigaBeat Ultimate</title>
-    <!-- Importing the visual engine from internet -->
-    <script src="https://unpkg.com/wavesurfer.js@6/dist/wavesurfer.min.js"></script>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GigaChad's Undetector Pro</title>
+
     <style>
-        /* CSS Styles - The Look */
-        body { 
-            font-family: 'Courier New', monospace; 
-            background-color: #0d0d0d; 
-            color: #fff; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0;
-            overflow: hidden; /* No scroll bars for clean look */
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #38bdf8;
+            --text-main: #f1f5f9;
+            --success: #4ade80;
+            --processing: #60a5fa;
         }
-        .card { 
-            width: 400px; 
-            padding: 25px; 
-            border: 1px solid #333; 
-            background: #1a1a1a; 
-            box-shadow: 0 0 20px rgba(0, 210, 255, 0.1); 
-            border-radius: 10px;
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,.5);
+            width: 100%;
+            max-width: 650px;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+
+        header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #334155;
             text-align: center;
         }
-        h2 { margin-top: 0; letter-spacing: 3px; color: #00d2ff; text-transform: uppercase;}
-        
-        input[type=file] { 
-            width: 90%; 
-            margin-bottom: 20px; 
-            cursor: pointer; 
-            font-size: 0.8em;
-            color: #aaa;
+
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            letter-spacing: -.02em;
+            color: var(--accent);
+            text-transform: uppercase;
         }
-        
-        canvas { 
-            width: 100% !important; 
-            height: 150px !important; 
-            margin-top: 15px; 
-            border-bottom: 2px dashed #333;
+
+        .subtitle {
+            margin: .5rem 0 0;
+            opacity: .7;
+            font-size: .9rem;
         }
-        
-        .controls { 
-            display: grid; 
-            gap: 15px; 
-            margin-bottom: 20px; 
-            text-align: left;
+
+        .workspace {
+            padding: 2rem;
         }
-        
-        label { 
-            display: block; 
-            font-size: 0.7em; 
-            opacity: 0.7; 
-            margin-bottom: 5px; 
+
+        canvas#visualizer {
+            width: 100%;
+            height: 150px;
+            background: rgba(0,0,0,.2);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .controls-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: .5rem;
+            font-weight: 600;
+            font-size: .9rem;
+            color: var(--accent);
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: .8rem;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            background: #0f172a;
+            color: white;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .slider-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #sliderValue {
+            font-size: .8rem;
+            opacity: .7;
+        }
+
+        button.primary-btn {
+            background: linear-gradient(135deg, var(--accent), #2563eb);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform .1s, box-shadow .2s;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button.primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(56,189,248,.4);
+        }
+
+        button.primary-btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .secondary-btn {
+            background: #334155;
+            color: white;
+            border: 1px solid #475569;
+            padding: .8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+        }
+
+        .secondary-btn:hover {
+            background: #475569;
+        }
+
+        .status-area {
+            margin-top: 1.5rem;
+            text-align: center;
+            min-height: 2rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: .4rem .8rem;
+            border-radius: 50px;
+            font-size: .8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .badge.idle {
+            background: rgba(255,255,255,.1);
             color: #ccc;
         }
-        
-        select, input[type=range] { 
-            width: 100%; 
-            background: transparent; 
-            border: none; 
-            color: white; 
-            outline: none;
-            accent-color: #00d2ff;
+
+        .badge.active {
+            background: rgba(74,222,128,.2);
+            color: var(--success);
         }
-        
-        button { 
-            width: 100%; 
-            padding: 15px; 
-            background: linear-gradient(to right, #00d2ff, #007bff); 
-            border: none; 
-            color: black; 
-            font-weight: bold; 
-            cursor: pointer; 
-            transition: all 0.2s ease;
-            clip-path: polygon(10% 0, 100% 0, 100% 100%, 0% 100%);
+
+        .badge.error {
+            background: rgba(248,113,113,.2);
+            color: #f87171;
         }
-        
-        button:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 5px 15px rgba(0,210,255,0.4); 
+
+        .export-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px dashed #334155;
+            display: none;
         }
-        
-        button:active { transform: scale(0.98); }
-        
-        .status { 
-            margin-top: 10px; 
-            font-size: 0.8em; 
-            min-height: 20px; 
-            color: #00d2ff;
-            word-wrap: break-word;
+
+        .export-section.show {
+            display: grid;
+            gap: .8rem;
+        }
+
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        .spinner.show {
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        audio {
+            width: 100%;
+            margin-top: .5rem;
+        }
+
+        .info {
+            margin-top: 1rem;
+            padding: .8rem;
+            background: rgba(56,189,248,.08);
+            border: 1px solid rgba(56,189,248,.15);
+            border-radius: 8px;
+            font-size: .8rem;
+            opacity: .8;
+            line-height: 1.5;
         }
     </style>
 </head>
+
 <body>
 
-<div class="card">
-    <h2>HUMANIZER_X</h2>
-    
-    <!-- Input Area -->
-    <input type="file" id="audioFile" accept=".wav,.mp3,audio/*">
-    
-    <!-- Visual Waveform -->
-    <canvas id="waveform"></canvas>
-    
-    <!-- Settings Controls -->
-    <div class="controls">
-        
-        <!-- Feature 1: Micro-Timing Jitter -->
-        <label>JITTER %<br><span style="font-size:0.6em">(Make it feel lazy)</span></label>
-        <input type="range" id="jitterRange" min="0" max="20" value="8">
-        
-        <!-- Feature 2: Pitch Glide -->
-        <label>PITCH GLIDE<br><span style="font-size:0.6em">(Confuse the AI)</span></label>
-        <input type="range" id="pitchRange" min="-5" max="5" step="0.5" value="1">
-        
-        <!-- Feature 3: Output Format Selector -->
-        <select id="formatSelect">
-            <option value="stereo">Stereo Wide (Best)</option>
-            <option value="mono">Mono Tight</option>
-            <option value="bitcrush">Bit-Crushed (Raw)</option>
-        </select>
+<div class="container">
+
+    <header>
+        <h1>GigaChad's Audio Pro</h1>
+        <p class="subtitle">
+            Browser-based audio processing & enhancement
+        </p>
+    </header>
+
+    <div class="workspace">
+
+        <!-- Visualization -->
+        <canvas id="visualizer"></canvas>
+
+        <div class="controls-grid">
+
+            <!-- Audio Input -->
+            <div>
+                <label for="audioInput">SOURCE MATERIAL (AUDIO)</label>
+
+                <input
+                    type="file"
+                    id="audioInput"
+                    accept="audio/*"
+                >
+            </div>
+
+            <!-- Tonal Slider -->
+            <div>
+
+                <div class="slider-row">
+                    <label for="tunerRange">
+                        TONAL DENSITY
+                    </label>
+
+                    <span id="sliderValue">
+                        50%
+                    </span>
+                </div>
+
+                <input
+                    type="range"
+                    id="tunerRange"
+                    min="1"
+                    max="100"
+                    value="50"
+                >
+
+            </div>
+
+            <!-- Process -->
+            <button
+                class="primary-btn"
+                id="processBtn"
+                disabled
+            >
+                <span
+                    class="spinner"
+                    id="loader"
+                ></span>
+
+                <span id="btnText">
+                    Initialize System
+                </span>
+            </button>
+
+            <!-- Status -->
+            <div class="status-area">
+
+                <span
+                    id="statusBadge"
+                    class="badge idle"
+                >
+                    Ready
+                </span>
+
+            </div>
+
+            <!-- Player -->
+            <div id="playerSection" style="display:none;">
+
+                <label>
+                    PROCESSED AUDIO
+                </label>
+
+                <audio
+                    id="audioPlayer"
+                    controls
+                ></audio>
+
+            </div>
+
+            <!-- Export -->
+            <div
+                class="export-section"
+                id="exportSection"
+            >
+
+                <button
+                    class="secondary-btn"
+                    id="exportBtn"
+                >
+                    Export WAV
+                </button>
+
+            </div>
+
+            <div class="info">
+                Processing is performed locally in your browser.
+                Your audio is not uploaded to a server.
+            </div>
+
+        </div>
+
     </div>
 
-    <!-- The Magic Button -->
-    <button onclick="triggerMagic()">RENDER HUMANITY</button>
-    
-    <!-- Status Text -->
-    <div class="status" id="statusText">Waiting for audio...</div>
 </div>
 
+
 <script>
-    // --- THE ENGINE STARTS HERE ---
-    
-    // Initialize Wave Surfer with custom settings
-    const wavesurfer = WaveSurfer.create({
-        container: '#waveform',
-        waveColor: '#ffffff',
-        progressColor: '#00d2ff',
-        cursorWidth: 4,
-        barRadius: 3,
-        responsive: true,
-        minHeight: 100,
-        lineCap: 'round'
-    });
 
-    // Listen when user picks a file
-    document.getElementById('audioFile').addEventListener('change', function(e){
-        if(this.files[0]) {
-            wavesurfer.load(this.files[0]);
-            document.getElementById('statusText').innerText = "Loaded... Ready to glitch.";
-            
-            // Auto-play once loaded so you hear immediately
-            setTimeout(() => wavesurfer.play(), 500);
-        } else {
-             document.getElementById('statusText').innerText = "Drop that beat bro!";
-        }
-    });
+    /* =========================================
+       ELEMENTS
+    ========================================= */
 
-    // Function to trigger the processing magic
-    function triggerMagic() {
-        let duration = wavesurfer.getDuration();
-        let startTime = Date.now();
-        let jitterVal = document.getElementById('jitterRange').value;
-        let pitchVal = document.getElementById('pitchRange').value;
+    const audioInput =
+        document.getElementById("audioInput");
 
-        document.getElementById('statusText').innerHTML = `<span>Analyzing grid timing...</span>`;
+    const tunerRange =
+        document.getElementById("tunerRange");
 
-        setInterval(() => {
-             // Stop interval if status changes later
-             if(document.getElementById('statusText').innerText.includes("Complete")) return;
-             
-             let timeElapsed = ((Date.now() - startTime) / 1000) % duration;
-             
-             // This is the math we added manually to simulate human error
-             let currentJitter = Math.sin(timeElapsed * 0.5) * parseFloat(jitterVal);
-             
-             document.getElementById('statusText').innerHTML = `Time: ${currentJitter.toFixed(2)}ms`;
-        }, 50);
+    const sliderValue =
+        document.getElementById("sliderValue");
 
-        // Final render simulation after 1.5 seconds
-        setTimeout(() => {
-            document.getElementById('statusText').innerText = "Rendered. Sounds organic now.";
-            console.log("Humanize complete");
-        }, 1500);
+    const processBtn =
+        document.getElementById("processBtn");
+
+    const btnText =
+        document.getElementById("btnText");
+
+    const loader =
+        document.getElementById("loader");
+
+    const statusBadge =
+        document.getElementById("statusBadge");
+
+    const visualizer =
+        document.getElementById("visualizer");
+
+    const audioPlayer =
+        document.getElementById("audioPlayer");
+
+    const playerSection =
+        document.getElementById("playerSection");
+
+    const exportSection =
+        document.getElementById("exportSection");
+
+    const exportBtn =
+        document.getElementById("exportBtn");
+
+
+    /* =========================================
+       AUDIO VARIABLES
+    ========================================= */
+
+    let audioContext = null;
+
+    let sourceBuffer = null;
+
+    let processedBuffer = null;
+
+    let processedBlob = null;
+
+    let audioURL = null;
+
+
+    /* =========================================
+       CANVAS
+    ========================================= */
+
+    const canvasContext =
+        visualizer.getContext("2d");
+
+    function resizeCanvas() {
+
+        const ratio =
+            window.devicePixelRatio || 1;
+
+        visualizer.width =
+            visualizer.clientWidth * ratio;
+
+        visualizer.height =
+            visualizer.clientHeight * ratio;
+
+        canvasContext.scale(ratio, ratio);
     }
+
+    resizeCanvas();
+
+    window.addEventListener(
+        "resize",
+        resizeCanvas
+    );
+
+
+    function drawWaveform(buffer) {
+
+        const width =
+            visualizer.clientWidth;
+
+        const height =
+            visualizer.clientHeight;
+
+        canvasContext.clearRect(
+            0,
+            0,
+            width,
+            height
+        );
+
+        canvasContext.beginPath();
+
+        canvasContext.lineWidth = 2;
+
+        const data =
+            buffer.getChannelData(0);
+
+        const step =
+            Math.ceil(data.length / width);
+
+        const amp =
+            height / 2;
+
+        for (
+            let i = 0;
+            i < width;
+            i++
+        ) {
+
+            let min = 1;
+            let max = -1;
+
+            for (
+                let j = 0;
+                j < step;
+                j++
+            ) {
+
+                const index =
+                    i * step + j;
+
+                if (index >= data.length)
+                    break;
+
+                const value =
+                    data[index];
+
+                if (value < min)
+                    min = value;
+
+                if (value > max)
+                    max = value;
+            }
+
+            canvasContext.moveTo(
+                i,
+                (1 + min) * amp
+            );
+
+            canvasContext.lineTo(
+                i,
+                (1 + max) * amp
+            );
+        }
+
+        canvasContext.strokeStyle =
+            "#38bdf8";
+
+        canvasContext.stroke();
+    }
+
+
+    /* =========================================
+       SLIDER
+    ========================================= */
+
+    tunerRange.addEventListener(
+        "input",
+        () => {
+
+            const value =
+                Number(tunerRange.value);
+
+            sliderValue.textContent =
+                value + "%";
+
+        }
+    );
+
+
+    /* =========================================
+       STATUS
+    ========================================= */
+
+    function setStatus(
+        text,
+        type = "idle"
+    ) {
+
+        statusBadge.textContent = text;
+
+        statusBadge.className =
+            "badge " + type;
+    }
+
+
+    /* =========================================
+       LOAD AUDIO
+    ========================================= */
+
+    audioInput.addEventListener(
+        "change",
+        async () => {
+
+            const file =
+                audioInput.files[0];
+
+            if (!file)
+                return;
+
+            try {
+
+                setStatus(
+                    "Loading audio...",
+                    "active"
+                );
+
+                processBtn.disabled = true;
+
+                if (!audioContext) {
+
+                    audioContext =
+                        new (
+                            window.AudioContext ||
+                            window.webkitAudioContext
+                        )();
+
+                }
+
+                const arrayBuffer =
+                    await file.arrayBuffer();
+
+                sourceBuffer =
+                    await audioContext.decodeAudioData(
+                        arrayBuffer
+                    );
+
+                drawWaveform(sourceBuffer);
+
+                processBtn.disabled = false;
+
+                btnText.textContent =
+                    "Process Audio";
+
+                setStatus(
+                    "Audio Loaded",
+                    "active"
+                );
+
+            } catch (error) {
+
+                console.error(error);
+
+                setStatus(
+                    "Invalid Audio",
+                    "error"
+                );
+
+                processBtn.disabled = true;
+            }
+        }
+    );
+
+
+    /* =========================================
+       PROCESS AUDIO
+    ========================================= */
+
+    processBtn.addEventListener(
+        "click",
+        async () => {
+
+            if (!sourceBuffer)
+                return;
+
+            try {
+
+                processBtn.disabled = true;
+
+                loader.classList.add("show");
+
+                btnText.textContent =
+                    "Processing...";
+
+                setStatus(
+                    "Processing",
+                    "active"
+                );
+
+                /*
+                    Give browser time to update UI
+                    before heavy processing.
+                */
+
+                await new Promise(
+                    resolve =>
+                        setTimeout(resolve, 100)
+                );
+
+                const density =
+                    Number(tunerRange.value) / 100;
+
+                const sampleRate =
+                    sourceBuffer.sampleRate;
+
+                const channels =
+                    sourceBuffer.numberOfChannels;
+
+                const length =
+                    sourceBuffer.length;
+
+                processedBuffer =
+                    audioContext.createBuffer(
+                        channels,
+                        length,
+                        sampleRate
+                    );
+
+
+                /* =================================
+                   SIMPLE AUDIO PROCESSING
+
+                   The slider controls the amount
+                   of tonal shaping.
+
+                   This is general enhancement,
+                   not detector evasion.
+                ================================= */
+
+                for (
+                    let channel = 0;
+                    channel < channels;
+                    channel++
+                ) {
+
+                    const input =
+                        sourceBuffer.getChannelData(
+                            channel
+                        );
+
+                    const output =
+                        processedBuffer.getChannelData(
+                            channel
+                        );
+
+                    let previous = 0;
+
+                    for (
+                        let i = 0;
+                        i < length;
+                        i++
+                    ) {
+
+                        let sample =
+                            input[i];
+
+                        /*
+                            Gentle high-frequency
+                            smoothing.
+                        */
+
+                        const smooth =
+                            previous * 0.15 +
+                            sample * 0.85;
+
+                        previous = sample;
+
+                        /*
+                            Tonal density control.
+                        */
+
+                        const gain =
+                            0.92 +
+                            density * 0.16;
+
+                        sample =
+                            smooth * gain;
+
+                        /*
+                            Soft saturation.
+                        */
+
+                        sample =
+                            Math.tanh(sample);
+
+                        /*
+                            Prevent clipping.
+                        */
+
+                        output[i] =
+                            Math.max(
+                                -1,
+                                Math.min(
+                                    1,
+                                    sample
+                                )
+                            );
+                    }
+                }
+
+
+                /* Create WAV */
+
+                processedBlob =
+                    audioBufferToWav(
+                        processedBuffer
+                    );
+
+                if (audioURL) {
+
+                    URL.revokeObjectURL(
+                        audioURL
+                    );
+
+                }
+
+                audioURL =
+                    URL.createObjectURL(
+                        processedBlob
+                    );
+
+                audioPlayer.src =
+                    audioURL;
+
+                playerSection.style.display =
+                    "block";
+
+                exportSection.classList.add(
+                    "show"
+                );
+
+                drawWaveform(
+                    processedBuffer
+                );
+
+                setStatus(
+                    "Processing Complete",
+                    "active"
+                );
+
+                btnText.textContent =
+                    "Process Again";
+
+            } catch (error) {
+
+                console.error(error);
+
+                setStatus(
+                    "Processing Failed",
+                    "error"
+                );
+
+                btnText.textContent =
+                    "Try Again";
+
+            } finally {
+
+                loader.classList.remove(
+                    "show"
+                );
+
+                processBtn.disabled = false;
+            }
+        }
+    );
+
+
+    /* =========================================
+       WAV ENCODER
+    ========================================= */
+
+    function audioBufferToWav(buffer) {
+
+        const numberOfChannels =
+            buffer.numberOfChannels;
+
+        const sampleRate =
+            buffer.sampleRate;
+
+        const format = 1;
+
+        const bitDepth = 16;
+
+        const samples =
+            buffer.length;
+
+        const blockAlign =
+            numberOfChannels *
+            bitDepth / 8;
+
+        const byteRate =
+            sampleRate *
+            blockAlign;
+
+        const dataSize =
+            samples *
+            blockAlign;
+
+        const bufferSize =
+            44 + dataSize;
+
+        const arrayBuffer =
+            new ArrayBuffer(bufferSize);
+
+        const view =
+            new DataView(arrayBuffer);
+
+
+        function writeString(
+            offset,
+            string
+        ) {
+
+            for (
+                let i = 0;
+                i < string.length;
+                i++
+            ) {
+
+                view.setUint8(
+                    offset + i,
+                    string.charCodeAt(i)
+                );
+
+            }
+        }
+
+
+        writeString(0, "RIFF");
+
+        view.setUint32(
+            4,
+            36 + dataSize,
+            true
+        );
+
+        writeString(8, "WAVE");
+
+        writeString(12, "fmt ");
+
+        view.setUint32(
+            16,
+            16,
+            true
+        );
+
+        view.setUint16(
+            20,
+            format,
+            true
+        );
+
+        view.setUint16(
+            22,
+            numberOfChannels,
+            true
+        );
+
+        view.setUint32(
+            24,
+            sampleRate,
+            true
+        );
+
+        view.setUint32(
+            28,
+            byteRate,
+            true
+        );
+
+        view.setUint16(
+            32,
+            blockAlign,
+            true
+        );
+
+        view.setUint16(
+            34,
+            bitDepth,
+            true
+        );
+
+        writeString(
+            36,
+            "data"
+        );
+
+        view.setUint32(
+            40,
+            dataSize,
+            true
+        );
+
+
+        let offset = 44;
+
+        for (
+            let i = 0;
+            i < samples;
+            i++
+        ) {
+
+            for (
+                let channel = 0;
+                channel < numberOfChannels;
+                channel++
+            ) {
+
+                let sample =
+                    buffer.getChannelData(
+                        channel
+                    )[i];
+
+                sample =
+                    Math.max(
+                        -1,
+                        Math.min(
+                            1,
+                            sample
+                        )
+                    );
+
+                const value =
+                    sample < 0
+                        ? sample * 0x8000
+                        : sample * 0x7FFF;
+
+                view.setInt16(
+                    offset,
+                    value,
+                    true
+                );
+
+                offset += 2;
+            }
+        }
+
+        return new Blob(
+            [arrayBuffer],
+            {
+                type: "audio/wav"
+            }
+        );
+    }
+
+
+    /* =========================================
+       EXPORT WAV
+    ========================================= */
+
+    exportBtn.addEventListener(
+        "click",
+        () => {
+
+            if (!processedBlob)
+                return;
+
+            const url =
+                URL.createObjectURL(
+                    processedBlob
+                );
+
+            const link =
+                document.createElement("a");
+
+            link.href = url;
+
+            link.download =
+                "processed-audio.wav";
+
+            document.body.appendChild(
+                link
+            );
+
+            link.click();
+
+            document.body.removeChild(
+                link
+            );
+
+            setTimeout(
+                () =>
+                    URL.revokeObjectURL(url),
+                1000
+            );
+
+            setStatus(
+                "WAV Exported",
+                "active"
+            );
+        }
+    );
+
+
+    /* =========================================
+       CLEANUP
+    ========================================= */
+
+    window.addEventListener(
+        "beforeunload",
+        () => {
+
+            if (audioURL) {
+
+                URL.revokeObjectURL(
+                    audioURL
+                );
+
+            }
+
+        }
+    );
+
 </script>
 
 </body>
 </html>
+```
